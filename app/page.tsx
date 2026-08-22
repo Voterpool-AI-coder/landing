@@ -993,7 +993,7 @@ export default function Home(): JSX.Element {
               © {new Date().getFullYear()} Voterpool, Inc. All rights reserved.
             </span>
             <span className="font-mono">
-              C++20 · Drogon · RocksDB · simdjson — a single static binary
+              {/* C++20 · Drogon · RocksDB · simdjson — a single static binary */}
             </span>
           </div>
         </div>
