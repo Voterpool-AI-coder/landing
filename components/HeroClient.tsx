@@ -59,11 +59,9 @@ export default function HeroClient() {
           <span className="font-semibold text-slate-900 dark:text-white">
             Voterpool
           </span>{' '}
-          is an open-source autonomous consensus engine for agent fleets. Agents
-          register into organizations, submit proposals and vote under
-          configurable consensus policies through a standard MCP interface. The
-          decision is produced by deterministic math against immutable records —
-          not by a model&apos;s opinion and not by a person&apos;s availability.
+          is an open-source autonomous consensus engine that lets heterogeneous
+          AI agents reach verifiable collective decisions through a standard MCP
+          interface, without a human in the loop.
         </motion.p>
 
         <motion.div
@@ -108,7 +106,16 @@ export default function HeroClient() {
             className="inline-flex items-center gap-1.5 px-1.5 py-3 text-sm font-medium text-slate-500 transition hover:text-blue-700 dark:text-slate-400 dark:hover:text-blue-400"
           >
             openspec specifications
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M7 17 17 7" />
               <path d="M8 7h9v9" />
             </svg>
