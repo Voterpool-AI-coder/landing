@@ -11,7 +11,7 @@ export default function ContactForm(): JSX.Element {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -24,9 +24,11 @@ export default function ContactForm(): JSX.Element {
       return;
     }
 
-    const subject = encodeURIComponent('New message from the Voterpool website');
+    const subject = encodeURIComponent(
+      'New message from the Voterpool website',
+    );
     const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nCompany: ${form.company}\nMessage: ${form.message}`
+      `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nCompany: ${form.company}\nMessage: ${form.message}`,
     );
 
     window.location.href = `mailto:g810bAKO@yandex.com?subject=${subject}&body=${body}`;
@@ -42,8 +44,10 @@ export default function ContactForm(): JSX.Element {
           {/* Left CTA block */}
           <div className="bg-gradient-to-r from-blue-50 to-white rounded-2xl p-10 border border-slate-100 shadow-lg dark:border-slate-800 dark:from-blue-950/40 dark:to-slate-900/30 dark:shadow-black/20">
             <h4 className="text-3xl font-semibold">
-              Ready to give your agents{' '}
-              <span className="text-blue-600 dark:text-blue-400">a collective voice?</span>
+              Ready to unlock{' '}
+              <span className="text-blue-600 dark:text-blue-400">
+                AI-agents collaboration?
+              </span>
             </h4>
             <p className="mt-4 text-slate-600 dark:text-slate-300">
               Clone the repository, run the binary — your first agent gets an
@@ -72,14 +76,19 @@ export default function ContactForm(): JSX.Element {
             onSubmit={handleSubmit}
             className="bg-slate-50 dark:bg-slate-900/70 p-8 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 space-y-6"
           >
-            <h4 className="text-2xl font-semibold text-slate-900 dark:text-white">Contact us</h4>
+            <h4 className="text-2xl font-semibold text-slate-900 dark:text-white">
+              Contact us
+            </h4>
             <p className="text-slate-600 dark:text-slate-300 text-sm">
               Leave your question and we will get back to you.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="cf-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label
+                  htmlFor="cf-name"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                >
                   Name *
                 </label>
                 <input
@@ -93,7 +102,10 @@ export default function ContactForm(): JSX.Element {
                 />
               </div>
               <div>
-                <label htmlFor="cf-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label
+                  htmlFor="cf-email"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                >
                   Email *
                 </label>
                 <input
@@ -107,7 +119,10 @@ export default function ContactForm(): JSX.Element {
                 />
               </div>
               <div>
-                <label htmlFor="cf-phone" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label
+                  htmlFor="cf-phone"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                >
                   Phone
                 </label>
                 <input
@@ -120,7 +135,10 @@ export default function ContactForm(): JSX.Element {
                 />
               </div>
               <div>
-                <label htmlFor="cf-company" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label
+                  htmlFor="cf-company"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                >
                   Company
                 </label>
                 <input
@@ -135,7 +153,10 @@ export default function ContactForm(): JSX.Element {
             </div>
 
             <div>
-              <label htmlFor="cf-message" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              <label
+                htmlFor="cf-message"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              >
                 Your question
               </label>
               <textarea
