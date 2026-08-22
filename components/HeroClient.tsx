@@ -1,184 +1,187 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import CountUp from './CountUp';
+import { GitHubIcon } from './Header';
+import Terminal from './Terminal';
+import WordCycler from './WordCycler';
+
+const STATS = [
+  {
+    value: 50000,
+    suffix: '+',
+    label: 'cast_vote operations per second on a single CPU core',
+  },
+  {
+    value: 3,
+    suffix: '',
+    label: 'consensus models: MAJORITY · QUORUM · CONSENT',
+  },
+  {
+    value: 15,
+    suffix: '',
+    label: 'MCP tools under a strict JSON-RPC 2.0 contract',
+  },
+  {
+    value: 0,
+    suffix: '',
+    label: 'external services — state lives in embedded RocksDB',
+  },
+];
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function HeroClient() {
-  const bgRef = useRef<HTMLDivElement | null>(null);
-  const mouse = useRef({ x: 0, y: 0 });
-  const raf = useRef<number | null>(null);
-
-  const startRaf = () => {
-    if (raf.current) return;
-    const step = () => {
-      const el = bgRef.current;
-      if (el) {
-        const strength = 40; // усиленный эффект
-        const tx = mouse.current.x * strength;
-        const ty = mouse.current.y * strength;
-
-        el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1.05)`;
-        const bx = 50 + mouse.current.x * 10;
-        const by = 50 + mouse.current.y * 10;
-        el.style.backgroundPosition = `${bx}% ${by}%`;
-      }
-      raf.current = requestAnimationFrame(step);
-    };
-    raf.current = requestAnimationFrame(step);
-    window.setTimeout(() => {
-      if (raf.current) {
-        cancelAnimationFrame(raf.current);
-        raf.current = null;
-      }
-    }, 1500);
-  };
-
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      mouse.current.x = (e.clientX - w / 2) / w;
-      mouse.current.y = (e.clientY - h / 2) / h;
-      startRaf();
-    };
-
-    window.addEventListener('mousemove', handleMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMove);
-      if (raf.current) cancelAnimationFrame(raf.current);
-    };
-  }, []);
-
   return (
-    <section
-      className="relative grid grid-cols-1 md:grid-cols-2 gap-12 items-center py-12 overflow-hidden"
-      style={{
-        minHeight: 'calc(100vh - 160px)',
-      }}
-    >
-      {/* ЛЕВАЯ СТОРОНА */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      >
-        <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-slate-900">
-          <span className="text-5xl font-semibold tracking-tight text-blue-600">
+    <section className="relative grid grid-cols-1 items-center gap-12 pb-16 pt-32 lg:grid-cols-[1.38fr_1fr] lg:gap-8 lg:pt-36 xl:gap-12">
+      {/* Left column */}
+      <div>
+        <motion.h1
+          initial={{ opacity: 0, y: 26 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.08, ease }}
+          className="text-4xl font-extrabold leading-[1.12] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.1rem] xl:text-[3.3rem] dark:text-white"
+        >
+          {/* nowrap-спаны: перенос возможен только между фразами,
+              слово agents никогда не остаётся одиноким */}
+          <span className="whitespace-nowrap">Consensus for</span>{' '}
+          <span className="whitespace-nowrap">AI agents</span>
+          <br />
+          <WordCycler />
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.18, ease }}
+          className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600 dark:text-slate-300"
+        >
+          <span className="font-semibold text-slate-900 dark:text-white">
             Voterpool
           </span>{' '}
-          — приватная инфраструктура для коллективных решений
-        </h2>
-        <p className="mt-6 text-lg text-slate-600 max-w-2xl">
-          Создавайте изолированные организации, подключайте AI-агентов,
-          настраивайте параметры консенсуса, управляйте силой голоса и
-          принимайте решения с высокой степенью конфиденциальности.
-        </p>
+          is an open-source autonomous consensus engine for agent fleets. Agents
+          register into organizations, submit proposals and vote under
+          configurable consensus policies through a standard MCP interface. The
+          decision is produced by deterministic math against immutable records —
+          not by a model&apos;s opinion and not by a person&apos;s availability.
+        </motion.p>
 
         <motion.div
-          className="mt-8 flex gap-4"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.6 }}
+          transition={{ duration: 0.7, delay: 0.3, ease }}
+          className="mt-8 flex flex-wrap items-center gap-3.5"
         >
           <a
-            href="/app"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-md font-medium shadow hover:bg-blue-700 transition pointer-events-none"
+            href="https://github.com/Voterpool/Voterpool"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 rounded-lg bg-blue-600 px-5 py-3 font-medium text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 dark:bg-blue-500 dark:shadow-blue-500/20 dark:hover:bg-blue-400"
           >
-            Открыть приложение
+            <GitHubIcon className="h-[18px] w-[18px]" />
+            View on GitHub
           </a>
           <a
-            href="#how"
-            className="inline-flex items-center gap-2 border border-slate-200 px-5 py-3 rounded-md text-slate-700 hover:bg-slate-50 transition"
+            href="#quickstart"
+            className="group inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white/80 px-5 py-3 font-medium text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-blue-500 dark:hover:text-blue-400"
           >
-            Как это работает
+            Quick start
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform group-hover:translate-y-0.5"
+            >
+              <path d="M12 5v14" />
+              <path d="m19 12-7 7-7-7" />
+            </svg>
+          </a>
+          <a
+            href="https://github.com/Voterpool/Voterpool/tree/main/openspec"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-1.5 py-3 text-sm font-medium text-slate-500 transition hover:text-blue-700 dark:text-slate-400 dark:hover:text-blue-400"
+          >
+            openspec specifications
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 17 17 7" />
+              <path d="M8 7h9v9" />
+            </svg>
           </a>
         </motion.div>
-      </motion.div>
 
-      {/* ПРАВАЯ СТОРОНА */}
+        {/* Stats */}
+        <motion.dl
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.45, ease }}
+          className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-slate-200/80 pt-8 sm:grid-cols-4 dark:border-slate-700/60"
+        >
+          {STATS.map((s) => (
+            <div key={s.label}>
+              <dt className="sr-only">{s.label}</dt>
+              <dd className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-[1.7rem] dark:text-white">
+                <CountUp to={s.value} suffix={s.suffix} />
+              </dd>
+              <dd className="mt-1.5 text-xs leading-snug text-slate-500 dark:text-slate-400">
+                {s.label}
+              </dd>
+            </div>
+          ))}
+        </motion.dl>
+      </div>
+
+      {/* Right column — terminal */}
       <motion.div
         className="relative"
-        initial={{ opacity: 0, x: 50 }}
+        initial={{ opacity: 0, x: 44 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.15, duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.85, delay: 0.2, ease }}
       >
-        <div className="rounded-2xl p-6 bg-gradient-to-tr from-blue-50 to-white shadow-lg border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-slate-500">Группа управления</div>
-              <h3 className="text-xl font-semibold">Текущие предложения</h3>
-            </div>
-            <div className="text-sm text-slate-500">Кворум: 35%</div>
+        <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-tr from-blue-200/40 via-sky-100/30 to-transparent blur-2xl dark:from-blue-700/20 dark:via-blue-800/10 dark:to-transparent" />
+
+        <Terminal />
+
+        {/* Floating chips */}
+        <motion.div
+          animate={{ y: [0, -9, 0] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -right-2 -top-7 hidden rounded-xl border border-slate-200 bg-white/90 px-3.5 py-2.5 shadow-lg shadow-blue-900/5 backdrop-blur md:block dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-black/30"
+        >
+          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            event: proposal_closed
           </div>
+          <div className="mt-1 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            final_status: PASSED · action_applied
+          </div>
+        </motion.div>
 
-          <ul className="mt-6 space-y-4">
-            <motion.li
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white p-4 rounded-lg border border-slate-100"
-            >
-              <div className="flex justify-between items-start gap-4">
-                <div>
-                  <div className="text-sm font-medium">
-                    Изменить кворум голосования
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">
-                    Предложение #34 — 3 дня до окончания
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xs text-slate-500">За: 42%</div>
-                  <div className="text-xs text-slate-500">Против: 33%</div>
-                </div>
-              </div>
-            </motion.li>
-
-            <motion.li
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-white p-4 rounded-lg border border-slate-100"
-            >
-              <div className="flex justify-between items-start gap-4">
-                <div>
-                  <div className="text-sm font-medium">
-                    Предоставить 3% силы голоса для участника
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">
-                    Предложение #35 — 5 дней до окончания
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xs text-slate-500">За: 61%</div>
-                  <div className="text-xs text-slate-500">Против: 12%</div>
-                </div>
-              </div>
-            </motion.li>
-
-            <motion.li
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="bg-white p-4 rounded-lg border border-slate-100"
-            >
-              <div className="flex justify-between items-start gap-4">
-                <div>
-                  <div className="text-sm font-medium">
-                    Добавить AI-агента в организацию
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">
-                    Предложение #36 — 12 дней до окончания
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xs text-slate-500">За: 78%</div>
-                  <div className="text-xs text-slate-500">Против: 7%</div>
-                </div>
-              </div>
-            </motion.li>
-          </ul>
-        </div>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{
+            duration: 6.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 0.8,
+          }}
+          className="absolute -bottom-6 -left-4 hidden rounded-xl border border-slate-200 bg-white/90 px-3.5 py-2.5 shadow-lg shadow-blue-900/5 backdrop-blur md:block dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-black/30"
+        >
+          <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            SSE · GET /mcp/events
+          </div>
+          <div className="mt-1 font-mono text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+            vote_cast → all-orgs subscription
+          </div>
+        </motion.div>
       </motion.div>
     </section>
   );
