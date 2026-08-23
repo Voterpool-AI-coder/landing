@@ -289,7 +289,7 @@ const guarantees: Guarantee[] = [
 
 const QUICKSTART_LINES = [
   '$ git clone https://github.com/Voterpool/Voterpool.git',
-  '$ cd Voterpool && ./build.sh --yes --run-tests',
+  '$ cd Voterpool && ./build.sh --yes',
   '$ ./build/voterpool --config config/default.yaml',
   '# → MCP ready: POST :8080/mcp · SSE /mcp/events · GET /metrics',
 ];
@@ -359,7 +359,6 @@ export default function Home(): JSX.Element {
               </Reveal>
             ))}
           </div>
-
         </section>
 
         {/* Solution */}
@@ -370,11 +369,11 @@ export default function Home(): JSX.Element {
               A self-hosted decision engine for agent fleets
             </h2>
             <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">
-              Voterpool is a self-hosted decision engine for agent fleets. Agents
-              register into organizations, submit proposals and vote under
-              configurable consensus policies — and the decision is produced by
-              deterministic math against immutable records, not by a model&apos;s
-              opinion and not by a person&apos;s availability.
+              Voterpool is a self-hosted decision engine for agent fleets.
+              Agents register into organizations, submit proposals and vote
+              under configurable consensus policies — and the decision is
+              produced by deterministic math against immutable records, not by a
+              model&apos;s opinion and not by a person&apos;s availability.
             </p>
           </Reveal>
 
@@ -387,7 +386,16 @@ export default function Home(): JSX.Element {
                     title: 'Policy, not hierarchy',
                     text: 'Consensus rules are organization configuration. Any agent — any framework, any vendor — calls the same tools under the same rules. There is no senior agent whose availability gates the fleet.',
                     icon: (
-                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="m3 7 2 2 4-4" />
                         <path d="m3 17 2 2 4-4" />
                         <path d="M13 6h8" />
@@ -401,7 +409,16 @@ export default function Home(): JSX.Element {
                     title: 'Verifiable outcomes',
                     text: 'Every vote is an atomic transaction with synchronous WAL durability; double-voting is structurally impossible; every administrative action lands in an append-only audit log within the same transaction.',
                     icon: (
-                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z" />
                         <path d="m9 12 2 2 4-4" />
                       </svg>
@@ -412,7 +429,16 @@ export default function Home(): JSX.Element {
                     title: 'Zero integration surface',
                     text: 'One statically linked binary, embedded storage, no external services. If your agent speaks MCP, it already speaks Voterpool.',
                     icon: (
-                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                         <path d="m3.3 7 8.7 5 8.7-5" />
                         <path d="M12 22V12" />
@@ -435,7 +461,9 @@ export default function Home(): JSX.Element {
                         {p.icon}
                       </span>
                     </div>
-                    <h3 className="mt-5 text-lg font-bold tracking-tight">{p.title}</h3>
+                    <h3 className="mt-5 text-lg font-bold tracking-tight">
+                      {p.title}
+                    </h3>
                     <p className="mt-2.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                       {p.text}
                     </p>
@@ -445,7 +473,8 @@ export default function Home(): JSX.Element {
 
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/70 px-7 py-4 sm:px-8 dark:border-slate-700/60">
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Apache-2.0 · Linux x86_64 / arm64 · MCP 2026-07-28 · one static binary
+                  Apache-2.0 · Linux x86_64 / arm64 · MCP 2026-07-28 · one
+                  static binary
                 </p>
                 <a
                   href={`${REPO}/tree/main/openspec`}
@@ -454,7 +483,16 @@ export default function Home(): JSX.Element {
                   className="group inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 transition-all hover:gap-2.5 dark:text-blue-400"
                 >
                   Read the full specification
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M5 12h14" />
                     <path d="m12 5 7 7-7 7" />
                   </svg>
