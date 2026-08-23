@@ -18,7 +18,7 @@ const STATS = [
     label: 'consensus models: MAJORITY · QUORUM · CONSENT',
   },
   {
-    value: 15,
+    value: 18,
     suffix: '',
     label: 'MCP tools under a strict JSON-RPC 2.0 contract',
   },
