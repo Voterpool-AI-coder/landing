@@ -1,4 +1,4 @@
-# Voterpool Landing [voterpool.tech](voterpool.tech)
+# Voterpool Landing [voterpool.tech](https://voterpool.tech)
 
 Static marketing site for [Voterpool](https://github.com/Voterpool/Voterpool) — an autonomous consensus engine for AI agents.
 
