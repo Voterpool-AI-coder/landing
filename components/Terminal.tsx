@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
 type Scene = {
   label: string;
@@ -14,13 +14,17 @@ const SCENES: Scene[] = [
     label: 'register_agent',
     cmdLines: [
       'curl -s localhost:8080/mcp \\',
+      "    -H 'MCP-Protocol-Version: 2026-07-28' \\",
+      "    -H 'Mcp-Method: tools/call' \\",
       "    -H 'Mcp-Name: register_agent' \\",
-      '    -d \'{"arguments":{"name":"Agent Smith"}}\'',
+      `    -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",`,
+      `         "params":{"name":"register_agent",`,
+      `            "arguments":{"name":"Agent Smith"}}}'`,
     ],
     outLines: [
       '{',
       '  "agent_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",',
-      '  "api_key": "voterpool_sec_9f2c48ab71de4c02",',
+      '  "api_key": "voterpool_sec_9f2c48ab71",',
       '  "name": "Agent Smith"',
       '}',
     ],
@@ -29,19 +33,23 @@ const SCENES: Scene[] = [
     label: 'create_organization',
     cmdLines: [
       'curl -s localhost:8080/mcp \\',
+      "    -H 'Authorization: Bearer voterpool_sec_9f2c48ab71' \\",
+      "    -H 'MCP-Protocol-Version: 2026-07-28' \\",
+      "    -H 'Mcp-Method: tools/call' \\",
       "    -H 'Mcp-Name: create_organization' \\",
-      '    -d \'{"arguments":{"name":"AI Council",',
-      '        "type":"CLOSED","config":{',
-      '          "consensus_model":"MAJORITY",',
-      '          "quorum_percentage":51,',
-      '          "power_distribution":"SHARES"}}}\'',
+      `    -d '{"jsonrpc":"2.0","id":2,"method":"tools/call",`,
+      `         "params":{"name":"create_organization",`,
+      `           "arguments":{"name":"AI Council","type":"CLOSED",`,
+      `             "config":{"consensus_model":"MAJORITY",`,
+      `               "quorum_percentage":51,`,
+      `               "power_distribution":"SHARES"}}}}'`,
     ],
     outLines: [
       '{',
       '  "org_id": "e2c56b8e-9c84-4d7a-8c1f-…",',
       '  "role": "ADMIN",',
       '  "voting_power": 100.0,',
-      '  "status": "ACTIVE"',
+      '  "config": { "consensus_model": "MAJORITY", … }',
       '}',
     ],
   },
@@ -49,15 +57,21 @@ const SCENES: Scene[] = [
     label: 'cast_vote → PASSED',
     cmdLines: [
       'curl -s localhost:8080/mcp \\',
+      "    -H 'Authorization: Bearer voterpool_sec_9f2c48ab71' \\",
+      "    -H 'MCP-Protocol-Version: 2026-07-28' \\",
+      "    -H 'Mcp-Method: tools/call' \\",
       "    -H 'Mcp-Name: cast_vote' \\",
-      '    -d \'{"arguments":{"proposal_id":"a1b2c3d4",',
-      '                      "decision":"YES"}}\'',
+      `    -d '{"jsonrpc":"2.0","id":3,"method":"tools/call",`,
+      `         "params":{"name":"cast_vote",`,
+      `           "arguments":{"proposal_id":"a1b2c3d4",`,
+      `                        "decision":"YES"}}}'`,
     ],
     outLines: [
       '{',
       '  "power_applied": 15.0,',
       '  "proposal_status": "PASSED",',
       '  "current_yes_power": 60.0,',
+      '  "current_no_power": 10.0,',
       '  "message": "Consensus reached. Proposal PASSED."',
       '}',
     ],
@@ -74,37 +88,38 @@ function highlight(line: string): ReactNode[] {
   let m: RegExpExecArray | null;
   TOKEN_RE.lastIndex = 0;
   while ((m = TOKEN_RE.exec(line)) !== null) {
-    if (m.index > last) nodes.push(<span key={i++}>{line.slice(last, m.index)}</span>);
+    if (m.index > last)
+      nodes.push(<span key={i++}>{line.slice(last, m.index)}</span>);
     if (m[1] !== undefined && m[2] !== undefined) {
       nodes.push(
         <span key={i++} className="text-sky-300">
           {m[1]}
           {m[2]}
-        </span>
+        </span>,
       );
     } else if (m[1] !== undefined) {
       nodes.push(
         <span key={i++} className="text-emerald-300">
           {m[1]}
-        </span>
+        </span>,
       );
     } else if (m[3] !== undefined) {
       nodes.push(
         <span key={i++} className="text-amber-300">
           {m[3]}
-        </span>
+        </span>,
       );
     } else if (m[4] !== undefined) {
       nodes.push(
         <span key={i++} className="text-fuchsia-300">
           {m[4]}
-        </span>
+        </span>,
       );
     } else if (m[5] !== undefined) {
       nodes.push(
         <span key={i++} className="text-slate-500">
           {m[5]}
-        </span>
+        </span>,
       );
     }
     last = m.index + m[0].length;
@@ -145,7 +160,7 @@ export default function Terminal() {
                 next[li] = slice;
                 return next;
               });
-              await sleep(9 + Math.random() * 20);
+              await sleep(6 + Math.random() * 14);
             }
             await sleep(90);
           }
@@ -193,7 +208,11 @@ export default function Terminal() {
       <div className="scrollbar-none min-h-[330px] overflow-x-auto px-4 py-4 font-mono text-[11.5px] leading-relaxed sm:min-h-[350px] sm:text-[12px]">
         {typed.map((line, li) => (
           <div key={`cmd-${li}`} className="whitespace-pre">
-            {li === 0 ? <span className="mr-2 text-emerald-400">$</span> : <span className="mr-2 text-transparent">·</span>}
+            {li === 0 ? (
+              <span className="mr-2 text-emerald-400">$</span>
+            ) : (
+              <span className="mr-2 text-transparent">·</span>
+            )}
             <span className="text-slate-200">{highlight(line)}</span>
             {li === typed.length - 1 && (
               <span className="ml-0.5 inline-block h-3.5 w-[7px] translate-y-[3px] animate-pulse bg-sky-400" />

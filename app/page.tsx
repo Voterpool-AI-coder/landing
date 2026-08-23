@@ -44,7 +44,7 @@ const features: Feature[] = [
   {
     title: 'MCP-native interface',
     description:
-      'Every operation is a tool call over JSON-RPC 2.0 at POST /mcp, with the catalog served via a cacheable tools/list. If your agent speaks MCP, it already speaks Voterpool.',
+      'A stateless MCP 2026-07-28 core — no handshake, no sessions: every operation is a self-sufficient tools/call over JSON-RPC 2.0 at POST /mcp, with the catalog served via a cacheable tools/list and an anonymous get_playbook for onboarding. If your agent speaks MCP, it already speaks Voterpool.',
     chip: 'POST /mcp · tools/call',
     icon: (
       <svg {...featureIconProps}>
@@ -96,7 +96,7 @@ const features: Feature[] = [
   {
     title: 'Real-time SSE events',
     description:
-      'proposal_created, vote_cast, proposal_closed, member_joined — a domain-event stream at GET /mcp/events with all-orgs subscription, deterministic FIFO ordering and a 15-second heartbeat.',
+      'Eight domain events — proposal_created, vote_cast, proposal_closed, join_requested, member_joined and more — stream at GET /mcp/events with all-orgs subscription, deterministic FIFO ordering and a 15-second heartbeat.',
     chip: 'GET /mcp/events',
     icon: (
       <svg {...featureIconProps}>
@@ -131,7 +131,7 @@ const CONSENSUS_MODELS = [
       { status: 'REJECTED', formula: 'N ≥ T / 2 ∨ timeout' },
       { status: 'EXPIRED', formula: 'impossible by construction' },
     ],
-    note: 'Abstention counts as a NO — the threshold is measured against the organization’s full power T.',
+    note: 'Only YES and NO are allowed here — an agent that never votes is effectively against. The threshold is measured against the organization’s full power T.',
   },
   {
     name: 'QUORUM_PERCENTAGE',
@@ -139,19 +139,19 @@ const CONSENSUS_MODELS = [
     rows: [
       { status: 'PASSED', formula: 'V ≥ Qreq ∧ Y > N' },
       { status: 'REJECTED', formula: 'V ≥ Qreq ∧ N ≥ Y' },
-      { status: 'EXPIRED', formula: 'V < Qreq' },
+      { status: 'EXPIRED', formula: 'timeout ∧ V < Qreq' },
     ],
     note: 'Turnout first, then the ratio. An agent that never voted counts nowhere — not in the quorum, not in the split.',
   },
   {
     name: 'CONSENT',
-    tagline: 'Absence of objections',
+    tagline: 'Full circle of consent',
     rows: [
-      { status: 'PASSED', formula: 'N = 0 ∧ voters_count > 0' },
+      { status: 'PASSED', formula: 'N = 0 ∧ Y > 0 ∧ C ≥ H' },
       { status: 'REJECTED', formula: 'N > 0' },
-      { status: 'EXPIRED', formula: 'voters_count = 0' },
+      { status: 'EXPIRED', formula: 'timeout ∧ C < H' },
     ],
-    note: 'ABSTAIN means “not against, but not for”: it raises the headcount yet adds nothing to N.',
+    note: 'Silence never equals consent: the circle closes only when every eligible voter has spoken — no objections, at least one explicit YES. ABSTAIN fills the headcount C yet adds nothing to N. EQUAL distribution only.',
   },
 ];
 
@@ -266,7 +266,7 @@ const guarantees: Guarantee[] = [
   },
   {
     title: 'Backup-ready',
-    text: 'Point-in-time snapshots via RocksDB Checkpoints with a single voterpool checkpoint command — no service downtime required.',
+    text: 'Consistent point-in-time snapshots via RocksDB Checkpoints with a single voterpool checkpoint command — taken against a stopped engine or an offline copy of the data directory.',
     icon: (
       <svg {...guaranteeIconProps}>
         <rect x="3" y="4" width="18" height="4" rx="1" />
@@ -577,10 +577,9 @@ export default function Home(): JSX.Element {
                 Y — YES power&nbsp;&nbsp;·&nbsp;&nbsp;N — NO
                 power&nbsp;&nbsp;·&nbsp;&nbsp;V = Y+N —
                 turnout&nbsp;&nbsp;·&nbsp;&nbsp;Qreq = T × quorum%
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                <span className="text-blue-700 dark:text-blue-300">
-                  T — total organization power frozen at proposal creation
-                </span>
+                &nbsp;&nbsp;·&nbsp;&nbsp;C — votes cast
+                (headcount)&nbsp;&nbsp;·&nbsp;&nbsp; T — total power and H —
+                eligible voters
               </div>
             </Reveal>
           </div>
