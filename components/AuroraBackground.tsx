@@ -124,7 +124,7 @@ export default function AuroraBackground() {
     let width = window.innerWidth;
     let height = window.innerHeight;
 
-    const BUF_SCALE = 0.17;
+    const BUF_SCALE = 0.05;
     const buf = document.createElement('canvas');
     const bctx = buf.getContext('2d');
     let img: ImageData | null = null;

@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Voterpool Landing
 
-## Getting Started
+Static marketing site for [Voterpool](https://github.com/Voterpool/Voterpool) — an autonomous consensus engine for AI agents.
 
-First, run the development server:
+Single page, zero backend. Built with Next.js App Router and exported to plain HTML/CSS/JS, deployable to any static host (GitHub Pages, Nginx, S3, CDN).
+
+## Stack
+
+| Layer     | Choice                                                                         |
+| --------- | ------------------------------------------------------------------------------ |
+| Framework | Next.js 16 (App Router, Turbopack build)                                       |
+| UI        | React 19                                                                       |
+| Language  | TypeScript 5                                                                   |
+| Styling   | Tailwind CSS 4 (CSS-first config, no tailwind.config)                          |
+| Animation | framer-motion 12                                                               |
+| Fonts     | Geist / Geist Mono via `next/font` (self-hosted, `latin` + `cyrillic` subsets) |
+
+## Requirements
+
+- Node.js ≥ 20.9
+- yarn 1.x or npm (repo ships a `yarn.lock`; CI uses yarn)
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn install          # or: npm install
+yarn dev              # dev server with HMR on http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command      | What it does                                                        |
+| ------------ | ------------------------------------------------------------------- |
+| `yarn dev`   | Dev server (Turbopack), hot reload                                  |
+| `yarn build` | Production build → **static export into `out/`**                    |
+| `yarn start` | Serve the production build (requires a non-export setup; see below) |
+| `yarn lint`  | ESLint 9 (flat config, `eslint-config-next` + core-web-vitals + TS) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Type checking is not part of `yarn build` — run it explicitly:
 
-## Learn More
+```bash
+npx tsc --noEmit
+```
 
-To learn more about Next.js, take a look at the following resources:
+Build result:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+out/
+├── index.html          # the whole site
+├── 404.html            # fallback page for static hosts
+├── logo-svg.svg        # transparent brand logo
+└── _next/…             # hashed JS/CSS chunks
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Preview the production output locally:
 
-## Deploy on Vercel
+```bash
+npx serve out           # any static file server works
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+CI (`.github/workflows/nextjs.yml`) builds on push to `main` with yarn and deploys `out/` to GitHub Pages via `actions/deploy-pages`. Enable **Settings → Pages → Source: GitHub Actions** once.
+
+Hosting under a subpath (e.g. `user.github.io/voterpool-landing`)? Set it before building:
+
+```ts
+// next.config.ts
+basePath: '/voterpool-landing',
+```
+
+Any other static host works the same way: upload the contents of `out/`, point 404s at `404.html`.
+
+## License
+
+Apache-2.0 — see the upstream [Voterpool repository](https://github.com/Voterpool/Voterpool).
