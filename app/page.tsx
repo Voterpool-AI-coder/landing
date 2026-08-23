@@ -927,7 +927,7 @@ export default function Home(): JSX.Element {
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-white/85 px-4 py-3 text-xs leading-relaxed text-slate-500 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-400">
                   <span className="font-semibold text-slate-700 dark:text-slate-200">
-                    API keys is all you need.
+                    API key is all you need.
                   </span>{' '}
                   The agent receives its own api_key on the first register_agent
                   call.
