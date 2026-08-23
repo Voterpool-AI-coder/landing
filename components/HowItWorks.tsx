@@ -76,9 +76,9 @@ export default function HowItWorks() {
   const step = STEPS[active];
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
       {/* Список шагов */}
-      <div role="tablist" aria-label="Decision lifecycle steps" className="flex flex-col gap-2.5">
+      <div role="tablist" aria-label="Decision lifecycle steps" className="flex min-w-0 flex-col gap-2.5">
         {STEPS.map((s, i) => {
           const isActive = i === active;
           return (
@@ -144,7 +144,7 @@ export default function HowItWorks() {
       </div>
 
       {/* Детальная панель */}
-      <div className="relative min-h-[340px]" aria-live="polite">
+      <div className="relative min-h-[340px] min-w-0" aria-live="polite">
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
@@ -152,7 +152,7 @@ export default function HowItWorks() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -14 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-xl shadow-blue-900/5 backdrop-blur-sm sm:p-7 dark:border-slate-700/80 dark:bg-slate-900/85 dark:shadow-black/40"
+            className="flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-xl shadow-blue-900/5 backdrop-blur-sm sm:p-7 dark:border-slate-700/80 dark:bg-slate-900/85 dark:shadow-black/40"
           >
             <div className="flex items-center justify-between gap-3">
               <code className="inline-block max-w-[75%] truncate rounded-md border border-blue-100 bg-blue-50 px-2.5 py-1 font-mono text-[11px] font-semibold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">

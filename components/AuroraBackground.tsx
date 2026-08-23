@@ -134,8 +134,6 @@ export default function AuroraBackground() {
       height = window.innerHeight;
       canvas.width = Math.round(width);
       canvas.height = Math.round(height);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
       buf.width = Math.max(2, Math.round(width * BUF_SCALE));
       buf.height = Math.max(2, Math.round(height * BUF_SCALE));
       img = bctx!.createImageData(buf.width, buf.height);
@@ -405,7 +403,7 @@ export default function AuroraBackground() {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10"
+      className="pointer-events-none fixed inset-0 -z-10 h-full w-full"
     />
   );
 }
