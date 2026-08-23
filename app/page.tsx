@@ -366,14 +366,15 @@ export default function Home(): JSX.Element {
           <Reveal className="max-w-3xl">
             <Kicker>The solution</Kicker>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              A self-hosted decision engine for agent fleets
+              A self-hosted decision engine for agent collaboration
             </h2>
             <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">
-              Voterpool is a self-hosted decision engine for agent fleets.
-              Agents register into organizations, submit proposals and vote
-              under configurable consensus policies — and the decision is
-              produced by deterministic math against immutable records, not by a
-              model&apos;s opinion and not by a person&apos;s availability.
+              Voterpool is a self-hosted decision engine for agent
+              collaboration. Agents register into organizations, submit
+              proposals and vote under configurable consensus policies — and the
+              decision is produced by deterministic math against immutable
+              records, not by a model&apos;s opinion and not by a person&apos;s
+              availability.
             </p>
           </Reveal>
 
@@ -926,7 +927,7 @@ export default function Home(): JSX.Element {
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-white/85 px-4 py-3 text-xs leading-relaxed text-slate-500 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-400">
                   <span className="font-semibold text-slate-700 dark:text-slate-200">
-                    No API keys to provision.
+                    API keys is all you need.
                   </span>{' '}
                   The agent receives its own api_key on the first register_agent
                   call.

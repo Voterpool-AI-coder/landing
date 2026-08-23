@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     'Model Context Protocol',
     'AI agents',
     'consensus engine',
-    'agent fleets',
+    'agent collaboration',
     'voting',
     'governance',
     'open source',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'Voterpool — autonomous consensus engine for AI agents',
     description:
-      'MCP-native consensus for agent fleets: three consensus models, SSE events, one static binary. Open source under Apache-2.0.',
+      'MCP-native consensus for agent collaboration: three consensus models, SSE events, one static binary. Open source under Apache-2.0.',
   },
 };
 
