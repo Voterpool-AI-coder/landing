@@ -3,6 +3,7 @@ import ContactForm from '@/components/ContactForm';
 import CopyButton from '@/components/CopyButton';
 import Header, { GitHubIcon } from '@/components/Header';
 import HeroClient from '@/components/HeroClient';
+import HowItWorks from '@/components/HowItWorks';
 import Reveal from '@/components/Reveal';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -118,39 +119,6 @@ const features: Feature[] = [
         <path d="m21 21-4.3-4.3" />
       </svg>
     ),
-  },
-];
-
-const HOW_STEPS = [
-  {
-    n: '01',
-    title: 'Agent registration',
-    text: 'register_agent returns an agent_id + api_key pair — the agent’s only identity across sessions. Only the SHA-256 hash of the token is ever stored server-side.',
-    code: '{"agent_id":"f47ac10b-…","api_key":"voterpool_sec_…"}',
-  },
-  {
-    n: '02',
-    title: 'Organization & rules',
-    text: 'create_organization sets the consensus model, quorum threshold, voting duration and power distribution. The creator becomes ADMIN holding 100% of voting power.',
-    code: 'config: { consensus_model, quorum_percentage, voting_duration_sec }',
-  },
-  {
-    n: '03',
-    title: 'Proposal',
-    text: 'create_proposal submits a standard decision, a config_delta of new settings, or a managerial ACTION. The expires_at deadline is computed immediately at creation.',
-    code: 'action: { kind:"APPROVE_MEMBER", payload:{ target_agent_id } }',
-  },
-  {
-    n: '04',
-    title: 'Voting',
-    text: 'cast_vote atomically records the vote with power_at_vote and instantly re-evaluates consensus. Once the threshold is met, the proposal closes early — no waiting for the timer.',
-    code: 'cast_vote → { proposal_status, current_yes_power, power_applied }',
-  },
-  {
-    n: '05',
-    title: 'Automatic enforcement',
-    text: 'Once PASSED, the action or new settings apply within the same closing transaction. Every member receives a proposal_closed SSE event.',
-    code: 'PASSED → apply action / config_delta → proposal_closed',
   },
 ];
 
@@ -392,35 +360,105 @@ export default function Home(): JSX.Element {
             ))}
           </div>
 
-          <Reveal delay={0.1}>
-            <div className="mt-8 rounded-2xl border border-blue-200/70 bg-gradient-to-r from-blue-50/90 via-white/80 to-white/60 p-7 shadow-sm sm:p-8 dark:border-blue-500/25 dark:from-blue-950/50 dark:via-slate-900/60 dark:to-slate-900/30">
-              <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
-                <div className="rounded-xl bg-blue-600 p-3 text-white shadow-lg shadow-blue-600/30">
-                  <svg
-                    width="26"
-                    height="26"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+        </section>
+
+        {/* Solution */}
+        <section id="solution" className="scroll-mt-24 py-20">
+          <Reveal className="max-w-3xl">
+            <Kicker>The solution</Kicker>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              A self-hosted decision engine for agent fleets
+            </h2>
+            <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">
+              Voterpool is a self-hosted decision engine for agent fleets. Agents
+              register into organizations, submit proposals and vote under
+              configurable consensus policies — and the decision is produced by
+              deterministic math against immutable records, not by a model&apos;s
+              opinion and not by a person&apos;s availability.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <div className="mt-10 overflow-hidden rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50/80 via-white/60 to-white/30 shadow-xl shadow-blue-900/5 backdrop-blur-sm dark:border-blue-500/20 dark:from-blue-950/40 dark:via-slate-900/60 dark:to-slate-900/30 dark:shadow-black/40">
+              <div className="grid md:grid-cols-3 md:divide-x md:divide-slate-200/70 dark:md:divide-slate-700/60">
+                {[
+                  {
+                    n: '01',
+                    title: 'Policy, not hierarchy',
+                    text: 'Consensus rules are organization configuration. Any agent — any framework, any vendor — calls the same tools under the same rules. There is no senior agent whose availability gates the fleet.',
+                    icon: (
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m3 7 2 2 4-4" />
+                        <path d="m3 17 2 2 4-4" />
+                        <path d="M13 6h8" />
+                        <path d="M13 12h8" />
+                        <path d="M13 18h8" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    n: '02',
+                    title: 'Verifiable outcomes',
+                    text: 'Every vote is an atomic transaction with synchronous WAL durability; double-voting is structurally impossible; every administrative action lands in an append-only audit log within the same transaction.',
+                    icon: (
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z" />
+                        <path d="m9 12 2 2 4-4" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    n: '03',
+                    title: 'Zero integration surface',
+                    text: 'One statically linked binary, embedded storage, no external services. If your agent speaks MCP, it already speaks Voterpool.',
+                    icon: (
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                        <path d="m3.3 7 8.7 5 8.7-5" />
+                        <path d="M12 22V12" />
+                      </svg>
+                    ),
+                  },
+                ].map((p) => (
+                  <div
+                    key={p.n}
+                    className="group relative p-7 transition-colors duration-300 hover:bg-white/50 sm:p-8 dark:hover:bg-slate-900/40"
                   >
-                    <path d="M12 3v4" />
-                    <path d="m5 21 7-14 7 14" />
-                    <path d="M8 15h8" />
-                    <path d="M3 21h18" />
-                  </svg>
-                </div>
-                <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                  <span className="font-semibold text-slate-900 dark:text-white">
-                    Policy, not hierarchy.
-                  </span>{' '}
-                  Consensus rules are organization configuration — any agent of
-                  any framework votes under the same rules, and the outcome is
-                  produced by deterministic math over an immutable transaction
-                  log.
+                    <div className="flex items-start justify-between gap-4">
+                      <span
+                        aria-hidden
+                        className="select-none font-mono text-5xl font-black leading-none text-blue-100 transition-colors group-hover:text-blue-200 dark:text-blue-900/70 dark:group-hover:text-blue-800"
+                      >
+                        {p.n}
+                      </span>
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-500/15 dark:text-blue-400 dark:group-hover:bg-blue-500 dark:group-hover:text-white">
+                        {p.icon}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 text-lg font-bold tracking-tight">{p.title}</h3>
+                    <p className="mt-2.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                      {p.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/70 px-7 py-4 sm:px-8 dark:border-slate-700/60">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  Apache-2.0 · Linux x86_64 / arm64 · MCP 2026-07-28 · one static binary
                 </p>
+                <a
+                  href={`${REPO}/tree/main/openspec`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 transition-all hover:gap-2.5 dark:text-blue-400"
+                >
+                  Read the full specification
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
               </div>
             </div>
           </Reveal>
@@ -475,32 +513,9 @@ export default function Home(): JSX.Element {
             </p>
           </Reveal>
 
-          <div className="relative mt-12">
-            <div
-              aria-hidden
-              className="absolute bottom-8 left-[27px] top-2 hidden w-px bg-gradient-to-b from-blue-300 via-blue-200 to-transparent sm:block dark:from-blue-600 dark:via-blue-800"
-            />
-            <div className="space-y-5">
-              {HOW_STEPS.map((step, i) => (
-                <Reveal key={step.n} delay={i * 0.06}>
-                  <div className="group relative flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white/85 p-6 shadow-sm backdrop-blur-sm transition duration-300 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-900/10 sm:ml-16 sm:flex-row sm:items-start sm:gap-7 dark:border-slate-700/80 dark:bg-slate-900/70 dark:hover:border-blue-500/40 dark:hover:shadow-black/40">
-                    <div className="absolute -left-16 top-6 hidden h-14 w-14 items-center justify-center rounded-2xl border border-blue-200 bg-white font-mono text-sm font-bold text-blue-600 shadow-sm transition-colors group-hover:border-blue-400 group-hover:bg-blue-600 group-hover:text-white sm:flex dark:border-blue-500/40 dark:bg-slate-950 dark:text-blue-400 dark:group-hover:border-blue-500 dark:group-hover:bg-blue-500 dark:group-hover:text-white">
-                      {step.n}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold">{step.title}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                        {step.text}
-                      </p>
-                      <code className="scrollbar-none mt-3 block overflow-x-auto whitespace-nowrap rounded-lg border border-slate-100 bg-slate-950 px-3 py-2 font-mono text-[11.5px] text-emerald-300 dark:border-slate-800">
-                        {step.code}
-                      </code>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
+          <Reveal delay={0.08} className="mt-12">
+            <HowItWorks />
+          </Reveal>
         </section>
 
         {/* Consensus math */}

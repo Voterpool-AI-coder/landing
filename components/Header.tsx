@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 const NAV = [
   { href: '#why', label: 'Why' },
+  { href: '#solution', label: 'Solution' },
   { href: '#features', label: 'Features' },
   { href: '#how', label: 'How it works' },
   { href: '#consensus', label: 'Consensus' },

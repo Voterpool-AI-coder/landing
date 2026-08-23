@@ -82,6 +82,28 @@ pre {
   display: none;
 }
 
+/* Полоса прогресса автоцикла в How it works */
+@keyframes hiw-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.hiw-progress {
+  animation-name: hiw-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hiw-progress {
+    animation: none;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
