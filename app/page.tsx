@@ -1000,21 +1000,30 @@ export default function Home(): JSX.Element {
                   { label: 'Tests', href: `${REPO}/tree/main/tests` },
                 ],
               },
+              // {
+              //   title: 'Protocol',
+              //   links: [
+              //     {
+              //       label: 'MCP 2026-07-28',
+              //       href: 'https://modelcontextprotocol.io',
+              //     },
+              //     {
+              //       label: 'JSON-RPC 2.0',
+              //       href: 'https://www.jsonrpc.org/specification',
+              //     },
+              //     { label: 'RocksDB', href: 'https://rocksdb.org/' },
+              //     {
+              //       label: 'Drogon',
+              //       href: 'https://github.com/drogonframework/drogon',
+              //     },
+              //   ],
+              // },
               {
-                title: 'Protocol',
+                title: 'Contact',
                 links: [
                   {
-                    label: 'MCP 2026-07-28',
-                    href: 'https://modelcontextprotocol.io',
-                  },
-                  {
-                    label: 'JSON-RPC 2.0',
-                    href: 'https://www.jsonrpc.org/specification',
-                  },
-                  { label: 'RocksDB', href: 'https://rocksdb.org/' },
-                  {
-                    label: 'Drogon',
-                    href: 'https://github.com/drogonframework/drogon',
+                    label: 'g810bAKO@yandex.com',
+                    href: `mailto:g810bAKO@yandex.com`,
                   },
                 ],
               },

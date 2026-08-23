@@ -16,11 +16,17 @@ export default function ContactForm(): JSX.Element {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const RECIPIENT = 'g810bAKO@yandex.com';
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.name || !form.email) {
       alert('Please fill in the required fields: Name and Email.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      alert('Please enter a valid email address.');
       return;
     }
 
@@ -31,7 +37,17 @@ export default function ContactForm(): JSX.Element {
       `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nCompany: ${form.company}\nMessage: ${form.message}`,
     );
 
-    window.location.href = `mailto:g810bAKO@yandex.com?subject=${subject}&body=${body}`;
+    // Triggering mailto via location.href is unreliable in some browsers and
+    // contexts (it can be ignored, especially when the page is not in the
+    // foreground or a default mail client is missing). Creating a real anchor
+    // element and programmatically clicking it is the most reliable way to
+    // ensure the recipient address is always included.
+    const link = document.createElement('a');
+    link.href = `mailto:${RECIPIENT}?subject=${subject}&body=${body}`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const inputCls =
