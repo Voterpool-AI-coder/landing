@@ -22,6 +22,10 @@ import { useEffect, useRef } from 'react';
  * линии жеста (grip — сборка) и добавляет поперечную волну.
  * Впадины волны окрашиваются в fold.shade, гребни — в fold.crest,
  * так что за мышью тянется цветная волна-градиент со складками.
+ *
+ * Влияние следов растеризуется в низкоразрешающую сетку смещений:
+ * каждая точка обрабатывается один раз в своём bbox, а не для каждого
+ * пикселя буфера. Порядок суммирования по точкам сохранён.
  */
 
 export type FabricTheme = {
@@ -92,13 +96,20 @@ type TrailPoint = {
   max: number;
 };
 
+const rgbCache = new Map<string, [number, number, number]>();
+
 function hexToRgb(hex: string): [number, number, number] {
-  const v = hex.replace('#', '');
-  return [
-    parseInt(v.slice(0, 2), 16),
-    parseInt(v.slice(2, 4), 16),
-    parseInt(v.slice(4, 6), 16),
-  ];
+  let v = rgbCache.get(hex);
+  if (!v) {
+    const s = hex.replace('#', '');
+    v = [
+      parseInt(s.slice(0, 2), 16),
+      parseInt(s.slice(2, 4), 16),
+      parseInt(s.slice(4, 6), 16),
+    ];
+    rgbCache.set(hex, v);
+  }
+  return v;
 }
 
 function currentThemeName(): 'light' | 'dark' {
@@ -126,8 +137,22 @@ export default function AuroraBackground() {
 
     const BUF_SCALE = 0.05;
     const buf = document.createElement('canvas');
-    const bctx = buf.getContext('2d');
+    const bctx = buf.getContext('2d', { alpha: false });
     let img: ImageData | null = null;
+
+    // Переиспользуемые буферы (без аллокаций в кадре)
+    let dispX = new Float32Array(0);
+    let dispY = new Float32Array(0);
+    let waveS = new Float32Array(0);
+
+    let blobCap = 0;
+    let bcx = new Float32Array(0);
+    let bcy = new Float32Array(0);
+    let bR = new Float32Array(0);
+    let ba = new Float32Array(0);
+    let br = new Float32Array(0);
+    let bgc = new Float32Array(0);
+    let bb = new Float32Array(0);
 
     const resize = () => {
       width = window.innerWidth;
@@ -137,6 +162,15 @@ export default function AuroraBackground() {
       buf.width = Math.max(2, Math.round(width * BUF_SCALE));
       buf.height = Math.max(2, Math.round(height * BUF_SCALE));
       img = bctx!.createImageData(buf.width, buf.height);
+      // Альфа-канал постоянна — заполняем один раз, а не каждый кадр
+      const d = img.data;
+      for (let i = 3; i < d.length; i += 4) d[i] = 255;
+      dispX = new Float32Array(buf.width * buf.height);
+      dispY = new Float32Array(buf.width * buf.height);
+      waveS = new Float32Array(buf.width * buf.height);
+      // Состояние контекста сбрасывается при смене размеров
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
     };
     resize();
 
@@ -159,7 +193,7 @@ export default function AuroraBackground() {
     let lastSpawnX = 0;
     let lastSpawnY = 0;
     let hasLastSpawn = false;
-    let trail: TrailPoint[] = [];
+    const trail: TrailPoint[] = [];
 
     const onMove = (e: MouseEvent) => {
       mouse.tx = e.clientX;
@@ -212,8 +246,14 @@ export default function AuroraBackground() {
       mouse.x += (mouse.tx - mouse.x) * 0.08;
       mouse.y += (mouse.ty - mouse.y) * 0.08;
 
-      for (let i = 0; i < trail.length; i++) trail[i].life += dtMs;
-      trail = trail.filter((p) => p.life < p.max);
+      // Сжатие следа на месте (вместо filter с аллокацией)
+      let wt = 0;
+      for (let i = 0; i < trail.length; i++) {
+        const p = trail[i];
+        p.life += dtMs;
+        if (p.life < p.max) trail[wt++] = p;
+      }
+      trail.length = wt;
 
       // Палитра активной темы
       const theme = FABRIC_THEMES[themeName];
@@ -223,32 +263,34 @@ export default function AuroraBackground() {
       const foldIntensity = theme.fold.intensity;
       const nBlobs = theme.blobs.length;
 
+      if (nBlobs > blobCap) {
+        blobCap = nBlobs;
+        bcx = new Float32Array(nBlobs);
+        bcy = new Float32Array(nBlobs);
+        bR = new Float32Array(nBlobs);
+        ba = new Float32Array(nBlobs);
+        br = new Float32Array(nBlobs);
+        bgc = new Float32Array(nBlobs);
+        bb = new Float32Array(nBlobs);
+      }
+
       // Параметры блобов на этот кадр
-      const bcx = new Float32Array(nBlobs);
-      const bcy = new Float32Array(nBlobs);
-      const bR = new Float32Array(nBlobs);
-      const ba = new Float32Array(nBlobs);
-      const br = new Float32Array(nBlobs);
-      const bgc = new Float32Array(nBlobs);
-      const bb = new Float32Array(nBlobs);
       const diag = Math.sqrt(width * width + height * height);
 
       for (let j = 0; j < nBlobs; j++) {
         const ang = t * 0.00007 + (j / nBlobs) * Math.PI * 2;
-        const cx =
+        bcx[j] =
           (0.5 +
             0.34 * Math.cos(ang + j * 1.3) +
             0.08 * Math.sin(t * 0.00019 + j)) *
             width +
           (mouse.x - width / 2) * 0.012;
-        const cy =
+        bcy[j] =
           (0.5 +
             0.3 * Math.sin(ang * 1.18 + j * 2.1) +
             0.08 * Math.cos(t * 0.00023 + j)) *
             height +
           (mouse.y - height / 2) * 0.012;
-        bcx[j] = cx;
-        bcy[j] = cy;
         bR[j] = diag * (0.42 + 0.05 * Math.sin(t * 0.0004 + j * 1.7));
         ba[j] =
           theme.blobs[j].alpha * (0.9 + 0.1 * Math.sin(t * 0.0004 + j * 1.9));
@@ -261,53 +303,90 @@ export default function AuroraBackground() {
       const worldPerBufX = width / bw;
       const worldPerBufY = height / bh;
       const nt = trail.length;
-      const R2 = CFG.foldRadius * CFG.foldRadius;
+      const R = CFG.foldRadius;
+      const R2 = R * R;
+      const pullC = CFG.pull;
+      const gripC = CFG.grip;
+      const waveC = CFG.wave;
 
-      let di = 0;
-      for (let py = 0; py < bh; py++) {
-        const wy = (py + 0.5) * worldPerBufY;
-        for (let px = 0; px < bw; px++, di += 4) {
-          let sx = (px + 0.5) * worldPerBufX;
-          let sy = wy;
+      // ── Растеризация влияния следов в сетку смещений ──
+      // Каждый пиксель получает те же суммы ox/oy/waveSigned, что и в
+      // попиксельной схеме: вклады точек добавляются в том же порядке k=0..nt-1.
+      dispX.fill(0);
+      dispY.fill(0);
+      waveS.fill(0);
+      for (let k = 0; k < nt; k++) {
+        const tp = trail[k];
+        const tnx = tp.nx;
+        const tny = tp.ny;
+        const fade = 1 - tp.life / tp.max; // константа точки на этот кадр
+        const lp = tp.life * 0.004;
+        const tx = tp.x;
+        const ty = tp.y;
 
-          // ── Складки от следов мыши ──
-          let ox = 0;
-          let oy = 0;
-          let waveSigned = 0; // знаковая сумма: впадина (-) или гребень (+)
-          for (let k = 0; k < nt; k++) {
-            const tp = trail[k];
-            const dx = sx - tp.x;
-            if (dx > CFG.foldRadius || dx < -CFG.foldRadius) continue;
-            const dy = sy - tp.y;
+        // bbox точки в координатах буфера (надмножество круга радиуса R)
+        let gx0 = Math.ceil((tx - R) / worldPerBufX - 0.5);
+        let gx1 = Math.floor((tx + R) / worldPerBufX - 0.5);
+        let gy0 = Math.ceil((ty - R) / worldPerBufY - 0.5);
+        let gy1 = Math.floor((ty + R) / worldPerBufY - 0.5);
+        if (gx0 < 0) gx0 = 0;
+        if (gy0 < 0) gy0 = 0;
+        if (gx1 > bw - 1) gx1 = bw - 1;
+        if (gy1 > bh - 1) gy1 = bh - 1;
+        if (gx0 > gx1 || gy0 > gy1) continue;
+
+        for (let py = gy0; py <= gy1; py++) {
+          const wy = (py + 0.5) * worldPerBufY;
+          const dy = wy - ty;
+          if (dy > R || dy < -R) continue;
+          let gi = py * bw + gx0;
+          for (let px = gx0; px <= gx1; px++, gi++) {
+            const dx = (px + 0.5) * worldPerBufX - tx;
+            if (dx > R || dx < -R) continue;
             const q = dx * dx + dy * dy;
             if (q > R2) continue;
             const d = Math.sqrt(q) || 1;
-            const f = (1 - d / CFG.foldRadius) * (1 - tp.life / tp.max);
+            const f = (1 - d / R) * fade;
             const f2 = f * f;
-            const pullAmt = CFG.pull * f2;
-            ox -= tp.nx * pullAmt;
-            oy -= tp.ny * pullAmt;
-            const gripAmt = CFG.grip * f2;
-            ox -= (dx / d) * gripAmt;
-            oy -= (dy / d) * gripAmt;
+            const pullAmt = pullC * f2;
+            const gripAmt = gripC * f2;
             const wv =
-              Math.sin(
-                (d / CFG.foldRadius) * Math.PI * CFG.waves - tp.life * 0.004,
-              ) *
-              CFG.pull *
-              CFG.wave *
+              Math.sin((d / R) * Math.PI * CFG.waves - lp) *
+              pullC *
+              waveC *
               f2;
-            ox += -tp.ny * wv;
-            oy += tp.nx * wv;
-            waveSigned += wv;
+            dispX[gi] -= tnx * pullAmt;
+            dispY[gi] -= tny * pullAmt;
+            dispX[gi] -= (dx / d) * gripAmt;
+            dispY[gi] -= (dy / d) * gripAmt;
+            dispX[gi] += -tny * wv;
+            dispY[gi] += tnx * wv;
+            waveS[gi] += wv;
           }
+        }
+      }
+
+      const MD80 = CFG.maxDisplace * 0.8;
+      const maxDisp = CFG.maxDisplace;
+
+      let di = 0;
+      let gi = 0;
+      for (let py = 0; py < bh; py++) {
+        const wy = (py + 0.5) * worldPerBufY;
+        for (let px = 0; px < bw; px++, di += 4, gi++) {
+          let sx = (px + 0.5) * worldPerBufX;
+          let sy = wy;
+
+          // ── Складки от следов мыши (из сетки смещений) ──
+          let ox = dispX[gi];
+          let oy = dispY[gi];
           const olen2 = ox * ox + oy * oy;
           let olen = Math.sqrt(olen2);
-          if (olen > CFG.maxDisplace) {
-            const k = CFG.maxDisplace / olen;
-            ox *= k;
-            oy *= k;
-            olen = CFG.maxDisplace;
+          if (olen > maxDisp) {
+            const kc = maxDisp / olen;
+            ox *= kc;
+            oy *= kc;
+            olen = maxDisp;
           }
           sx += ox;
           sy += oy;
@@ -318,8 +397,9 @@ export default function AuroraBackground() {
           let bl = bgRgb[2];
           for (let j = 0; j < nBlobs; j++) {
             const dx = sx - bcx[j];
-            const dy = sy - bcy[j];
             const Rj = bR[j];
+            if (dx > Rj || dx < -Rj) continue;
+            const dy = sy - bcy[j];
             const q = dx * dx + dy * dy;
             if (q > Rj * Rj) continue;
             const u = 1 - Math.sqrt(q) / Rj;
@@ -333,8 +413,9 @@ export default function AuroraBackground() {
 
           // ── Окрашивание волны конфигурируемым градиентом ──
           if (olen > 2) {
-            const mag = Math.min(1, olen / (CFG.maxDisplace * 0.8));
-            const ws = Math.max(-1, Math.min(1, waveSigned / 55));
+            const mag = Math.min(1, olen / MD80);
+            const wsRaw = waveS[gi];
+            const ws = Math.max(-1, Math.min(1, wsRaw / 55));
             if (ws < 0) {
               // впадина — тень складки (fold.shade)
               const aa = mag * foldIntensity * (-ws * 0.85 + 0.3);
@@ -353,13 +434,10 @@ export default function AuroraBackground() {
           data[di] = r;
           data[di + 1] = g;
           data[di + 2] = bl;
-          data[di + 3] = 255;
         }
       }
 
       bctx.putImageData(img, 0, 0);
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(buf, 0, 0, width, height);
     };
 
