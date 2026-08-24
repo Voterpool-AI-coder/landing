@@ -5,15 +5,20 @@
 
 :root {
   --foreground: #171717;
+  /* Фон страницы = фон полотна FABRIC_THEMES.light.bg:
+     страховка от щелей при overscroll на мобильных */
+  --page-bg: #ffffff;
 }
 
 .dark {
   --foreground: #e2e8f0;
+  --page-bg: #05080f;
 }
 
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  background: var(--page-bg);
 }
 
 @supports (overflow-x: clip) {
@@ -27,10 +32,11 @@ html {
   --font-mono: var(--font-geist-mono);
 }
 
-/* Важно: никаких background на html/body — иначе они перекроют
-   фиксированный canvas с отрицательным z-index */
+/* Важно: фон html/body синхронизирован с FABRIC_THEMES через --page-bg.
+   Обёртка страницы имеет isolate, поэтому фон не перекрывает canvas. */
 body {
   color: var(--foreground);
+  background: var(--page-bg);
   font-family:
     var(--font-geist-sans),
     ui-sans-serif,
