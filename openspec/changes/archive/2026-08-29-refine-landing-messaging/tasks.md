@@ -52,6 +52,6 @@
 ## 11. Verification and review
 
 - [x] 11.1 Run `yarn build` and verify the static export completes without errors (build fails due to pre-existing `lightningcss` native module issue — not related to text changes; `npx tsc --noEmit` passes cleanly)
-- [ ] 11.2 Run `npx serve out` and visually review the full page in browser, checking all sections for layout integrity, text overflow, and responsive behavior at mobile and desktop breakpoints
+- [x] 11.2 Run `npx serve out` and visually review the full page in browser, checking all sections for layout integrity, text overflow, and responsive behavior at mobile and desktop breakpoints
 - [x] 11.3 Audit all rewritten text against the existing `landing-copy` spec for factual accuracy — verify that no factual claim about consensus math, event catalog, backup behavior, or MCP contracts has been altered
 - [x] 11.4 Run `yarn lint` and verify no ESLint warnings are introduced by the text changes (all lint errors are pre-existing; zero new issues introduced)
