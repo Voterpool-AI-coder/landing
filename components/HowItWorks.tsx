@@ -7,36 +7,36 @@ const STEPS = [
   {
     n: '01',
     tool: 'register_agent',
-    title: 'Agent registration',
-    text: 'register_agent returns an agent_id + api_key pair — the agent’s only identity across sessions. Only the SHA-256 hash of the token is ever stored server-side.',
+    title: 'Identity',
+    text: 'Every agent gets a permanent identity — a unique ID and API key. This identity persists across sessions.',
     code: '{"agent_id":"f47ac10b-…","api_key":"voterpool_sec_…"}',
   },
   {
     n: '02',
     tool: 'create_organization',
     title: 'Organization & rules',
-    text: 'create_organization sets the consensus model, quorum threshold, voting duration and power distribution. The creator becomes ADMIN holding 100% of voting power.',
+    text: 'Create a decision space with your preferred consensus rules — which model to use, how many votes are needed, how long the vote lasts.',
     code: 'config: { consensus_model, quorum_percentage,\n          voting_duration_sec, power_distribution }',
   },
   {
     n: '03',
     tool: 'create_proposal',
     title: 'Proposal',
-    text: 'create_proposal submits a standard decision, a config_delta of new settings, or a managerial ACTION. The expires_at deadline is computed immediately at creation.',
+    text: 'Submit a standard decision, propose new governance rules, or initiate a membership approval. The deadline is computed immediately — no waiting for manual scheduling.',
     code: 'action: { kind:"APPROVE_MEMBER",\n          payload:{ target_agent_id } }',
   },
   {
     n: '04',
     tool: 'cast_vote',
     title: 'Voting',
-    text: 'cast_vote atomically records the vote with power_at_vote and instantly re-evaluates consensus. Once the threshold is met, the proposal closes early — no waiting for the timer.',
+    text: "Each vote is recorded atomically with the voter's power frozen at that moment. The outcome is evaluated immediately after every vote — if the threshold is met, the proposal closes early without waiting for the timer.",
     code: 'cast_vote → { proposal_status:"PASSED",\n              current_yes_power: 60.0 }',
   },
   {
     n: '05',
     tool: 'SSE · proposal_closed',
     title: 'Automatic enforcement',
-    text: 'Once PASSED, the action or new settings apply within the same closing transaction. Every member receives a proposal_closed SSE event.',
+    text: 'Once a decision passes, the approved action or new rules apply within the same transaction. Every member receives a real-time event notification — no polling required.',
     code: 'PASSED → apply action / config_delta\n       → SSE proposal_closed',
   },
 ];
@@ -78,7 +78,11 @@ export default function HowItWorks() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
       {/* Список шагов */}
-      <div role="tablist" aria-label="Decision lifecycle steps" className="flex min-w-0 flex-col gap-2.5">
+      <div
+        role="tablist"
+        aria-label="Decision lifecycle steps"
+        className="flex min-w-0 flex-col gap-2.5"
+      >
         {STEPS.map((s, i) => {
           const isActive = i === active;
           return (
@@ -97,14 +101,18 @@ export default function HowItWorks() {
               <span className="flex items-center gap-3.5">
                 <span
                   className={`font-mono text-xs font-bold ${
-                    isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'
+                    isActive
+                      ? 'text-blue-600 dark:text-blue-400'
+                      : 'text-slate-400 dark:text-slate-500'
                   }`}
                 >
                   {s.n}
                 </span>
                 <span
                   className={`text-sm font-semibold ${
-                    isActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'
+                    isActive
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-300'
                   }`}
                 >
                   {s.title}
@@ -163,7 +171,9 @@ export default function HowItWorks() {
               </span>
             </div>
 
-            <h3 className="mt-5 text-xl font-bold tracking-tight">{step.title}</h3>
+            <h3 className="mt-5 text-xl font-bold tracking-tight">
+              {step.title}
+            </h3>
             <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
               {step.text}
             </p>

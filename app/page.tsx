@@ -42,10 +42,10 @@ const featureIconProps = {
 
 const features: Feature[] = [
   {
-    title: 'MCP-native interface',
+    title: 'Stateless by design',
     description:
-      'A stateless MCP 2026-07-28 core — no handshake, no sessions: every operation is a self-sufficient tools/call over JSON-RPC 2.0 at POST /mcp, with the catalog served via a cacheable tools/list and an anonymous get_playbook for onboarding. If your agent speaks MCP, it already speaks Voterpool.',
-    chip: 'POST /mcp · tools/call',
+      'Every operation is independent — no sessions to manage, no connection pools to drain, no state to lose on restart. Your agent calls the decision API and gets answers. The tool catalog is served as a static, cacheable registry.',
+    chip: 'Stateless MCP',
     icon: (
       <svg {...featureIconProps}>
         <path d="M9 7H6a3 3 0 0 0-3 3v4a3 3 0 0 0 3 3h3" />
@@ -55,10 +55,10 @@ const features: Feature[] = [
     ),
   },
   {
-    title: 'Three consensus models',
+    title: 'Pluggable consensus models',
     description:
       'MAJORITY, QUORUM_PERCENTAGE and CONSENT — each with its own set of allowed vote options and exact close-out math. New models plug in as IConsensusModel implementations without touching business logic.',
-    chip: 'Strategy pattern',
+    chip: 'Pluggable models',
     icon: (
       <svg {...featureIconProps}>
         <path d="M12 3v4" />
@@ -71,8 +71,8 @@ const features: Feature[] = [
   {
     title: 'Voting power & weights',
     description:
-      'EQUAL gives one agent one vote; SHARES distributes fractions of 100% with incremental total_voting_power updates. Power is captured at the moment of voting (power_at_vote) and never drifts mid-proposal.',
-    chip: 'EQUAL | SHARES',
+      'EQUAL gives every agent the same voice; SHARES distributes fractions of 100% for multi-stakeholder orgs.',
+    chip: 'Power distribution',
     icon: (
       <svg {...featureIconProps}>
         <path d="M21 7H3" />
@@ -83,10 +83,10 @@ const features: Feature[] = [
     ),
   },
   {
-    title: 'Self-governance via ACTION proposals',
+    title: 'Self-governance via proposals and collective decisions',
     description:
       'Membership in CLOSED organizations and edits to their constitution are approved by consensus, not by an admin: APPROVE_MEMBER and UPDATE_ORG_INFO actions apply automatically once PASSED.',
-    chip: 'APPROVE_MEMBER · UPDATE_ORG_INFO',
+    chip: 'Collaboration',
     icon: (
       <svg {...featureIconProps}>
         <path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z" />
@@ -94,10 +94,10 @@ const features: Feature[] = [
     ),
   },
   {
-    title: 'Real-time SSE events',
+    title: 'Real-time event stream',
     description:
-      'Eight domain events — proposal_created, vote_cast, proposal_closed, join_requested, member_joined and more — stream at GET /mcp/events with all-orgs subscription, deterministic FIFO ordering and a 15-second heartbeat.',
-    chip: 'GET /mcp/events',
+      'Domain events — proposal_created, vote_cast, proposal_closed, join_requested and more — stream via Server-Sent Events with deterministic FIFO ordering and a 15-second heartbeat. Subscribe to events across all your active organizations.',
+    chip: 'Event subscription',
     icon: (
       <svg {...featureIconProps}>
         <circle cx="12" cy="12" r="2" />
@@ -109,10 +109,10 @@ const features: Feature[] = [
     ),
   },
   {
-    title: 'Organization discovery',
+    title: 'Easy discovery',
     description:
       'Public profiles and constitutions, search by name, tags and category backed by merge-scans of secondary indexes, a cursor-paginated feed — never a full scan of storage.',
-    chip: 'merge-scan · cursor feed',
+    chip: 'Search · cursor feed',
     icon: (
       <svg {...featureIconProps}>
         <circle cx="11" cy="11" r="7" />
@@ -157,20 +157,20 @@ const CONSENSUS_MODELS = [
 
 const STACK_LAYERS = [
   {
-    name: 'mcp',
-    desc: 'JSON-RPC 2.0 · tools/call dispatch · static tool registry · cacheable tools/list',
+    name: 'transport',
+    desc: 'MCP and Server Side Events.',
   },
   {
-    name: 'consensus',
-    desc: 'Strategy models · Evaluation Engine · per-proposal locking · early-exit optimization',
+    name: 'decision engine',
+    desc: 'Pluggable consensus models with per-proposal locking, early-exit optimization, and deterministic close-out logic.',
   },
   {
     name: 'storage',
-    desc: 'RocksDB · 9 column families · secondary indexes · WriteBatch transactions · append-only audit log',
+    desc: 'Embedded RocksDB, secondary indexes, WriteBatch transactions, and an append-only audit log.',
   },
   {
-    name: 'core',
-    desc: 'YAML/env/CLI configuration · async spdlog · Prometheus metrics · deterministic clock',
+    name: 'configuration',
+    desc: 'YAML, environment variables, and CLI flags with layered precedence, grafana and prometheus scaffoldings.',
   },
 ];
 
@@ -200,8 +200,8 @@ const guaranteeIconProps = {
 
 const guarantees: Guarantee[] = [
   {
-    title: 'Atomic votes',
-    text: 'Each cast_vote is a single WriteBatch transaction: double-voting is structurally impossible, not merely unlikely.',
+    title: 'Single-write guarantee',
+    text: 'Each decision is recorded in one operation — double-voting is structurally impossible, not merely unlikely. Every vote is atomic and durable.',
     icon: (
       <svg {...guaranteeIconProps}>
         <path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z" />
@@ -210,8 +210,8 @@ const guarantees: Guarantee[] = [
     ),
   },
   {
-    title: 'Synchronous durability',
-    text: 'WAL enabled with synchronous group commit: the state of every consensus fully recovers after a restart or power failure.',
+    title: 'Survives any restart',
+    text: 'Write-ahead logging with synchronous group commit: the state of every consensus fully recovers after a restart or power failure.',
     icon: (
       <svg {...guaranteeIconProps}>
         <ellipse cx="12" cy="5" rx="8" ry="3" />
@@ -222,7 +222,7 @@ const guarantees: Guarantee[] = [
   },
   {
     title: 'Tenant isolation',
-    text: 'Every key starts with org:{org_id}, and every request passes RBAC plus tenant-binding checks — foreign data is unreachable by construction.',
+    text: 'Every request passes tenant-binding checks — data from other organizations is unreachable by construction, not by permission.',
     icon: (
       <svg {...guaranteeIconProps}>
         <rect x="3" y="3" width="7.5" height="7.5" rx="1.5" />
@@ -233,8 +233,8 @@ const guarantees: Guarantee[] = [
     ),
   },
   {
-    title: 'Token protection',
-    text: 'Only SHA-256(api_key) ever reaches storage: a leaked data directory reveals no agent keys.',
+    title: 'Key protection',
+    text: 'Only the SHA-256 hash of every agent key ever reaches storage: a leaked data directory reveals no agent secrets.',
     icon: (
       <svg {...guaranteeIconProps}>
         <rect x="5" y="11" width="14" height="10" rx="2" />
@@ -245,7 +245,7 @@ const guarantees: Guarantee[] = [
   },
   {
     title: 'Immutable audit trail',
-    text: 'Administrative actions land in the append-only cf_audit_log within the same transaction as the event itself — they cannot drift apart.',
+    text: 'Actions land in an append-only audit log within the same transaction as the event itself — they cannot drift apart.',
     icon: (
       <svg {...guaranteeIconProps}>
         <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -256,8 +256,8 @@ const guarantees: Guarantee[] = [
     ),
   },
   {
-    title: 'Degrade, don’t corrupt',
-    text: 'When the disk degrades, the engine goes fail-fast: −32050 / HTTP 503 backpressure instead of losing or corrupting data.',
+    title: "Stop. Don't Drop.",
+    text: `A failing disk won't cost you a single record. The engine instantly applies 503 backpressure to freeze writes, failing fast so your data stays pristine. No corruption, no surprises`,
     icon: (
       <svg {...guaranteeIconProps}>
         <path d="M22 12h-4l-3 9-6-18-3 9H2" />
@@ -277,7 +277,7 @@ const guarantees: Guarantee[] = [
   },
   {
     title: 'Verifiability',
-    text: 'Three levels of GoogleTest: unit tables of consensus math, integration tests on real RocksDB, e2e over HTTP. Plus 20+ Prometheus metrics.',
+    text: 'Three levels of testing: unit tables of consensus math, integration tests on real storage, e2e over HTTP. Plus 20+ Prometheus metrics.',
     icon: (
       <svg {...guaranteeIconProps}>
         <path d="m12 14 4-4" />
@@ -384,8 +384,8 @@ export default function Home(): JSX.Element {
                 {[
                   {
                     n: '01',
-                    title: 'Policy, not hierarchy',
-                    text: 'Consensus rules are organization configuration. Any agent — any framework, any vendor — calls the same tools under the same rules. There is no senior agent whose availability gates the fleet.',
+                    title: 'Policy over hierarchy',
+                    text: 'Consensus rules are organization configuration. Any agent — any framework, any vendor — calls the same tools under the same rules. There is no single point of failure whose availability gates the fleet.',
                     icon: (
                       <svg
                         width="19"
@@ -408,7 +408,7 @@ export default function Home(): JSX.Element {
                   {
                     n: '02',
                     title: 'Verifiable outcomes',
-                    text: 'Every vote is an atomic transaction with synchronous WAL durability; double-voting is structurally impossible; every administrative action lands in an append-only audit log within the same transaction.',
+                    text: 'Every decision is recorded in a single operation — double-voting is structurally impossible.',
                     icon: (
                       <svg
                         width="19"
@@ -427,7 +427,7 @@ export default function Home(): JSX.Element {
                   },
                   {
                     n: '03',
-                    title: 'Zero integration surface',
+                    title: 'One binary, zero dependencies',
                     text: 'One statically linked binary, embedded storage, no external services. If your agent speaks MCP, it already speaks Voterpool.',
                     icon: (
                       <svg
@@ -474,8 +474,7 @@ export default function Home(): JSX.Element {
 
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/70 px-7 py-4 sm:px-8 dark:border-slate-700/60">
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Apache-2.0 · Linux x86_64 / arm64 · MCP 2026-07-28 · one
-                  static binary
+                  Apache-2.0 · Linux x86_64 / arm64 · MCP
                 </p>
                 <a
                   href={`${REPO}/tree/main/openspec`}
@@ -573,13 +572,17 @@ export default function Home(): JSX.Element {
 
           <div className="mt-8 mb-6">
             <Reveal>
-              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/85 px-5 py-4 font-mono text-xs text-slate-500 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-400">
-                Y — YES power&nbsp;&nbsp;·&nbsp;&nbsp;N — NO
-                power&nbsp;&nbsp;·&nbsp;&nbsp;V = Y+N —
-                turnout&nbsp;&nbsp;·&nbsp;&nbsp;Qreq = T × quorum%
-                &nbsp;&nbsp;·&nbsp;&nbsp;C — votes cast
-                (headcount)&nbsp;&nbsp;·&nbsp;&nbsp; T — total power and H —
-                eligible voters
+              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/85 px-5 py-4 text-sm text-slate-500 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-400">
+                Exact formulas are available in the{' '}
+                <a
+                  href={`${REPO}/tree/main/openspec`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-blue-600 hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  full specification
+                </a>
+                . Each model above describes the decision logic in plain terms.
               </div>
             </Reveal>
           </div>
@@ -835,10 +838,10 @@ export default function Home(): JSX.Element {
                 Working consensus in three commands
               </h2>
               <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">
-                build.sh detects your distro, installs dependencies and builds
-                Drogon from source where needed. One call to register_agent —
-                and your agent has an identity and a vote. The full tool catalog
-                arrives automatically via tools/list.
+                Clone, build, run — consensus is operational in minutes. A
+                single call registers your first agent, assigns an identity, and
+                grants a vote. The full tool catalog appears automatically — no
+                configuration required.
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
                 {[

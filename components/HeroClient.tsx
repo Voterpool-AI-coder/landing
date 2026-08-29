@@ -8,24 +8,24 @@ import WordCycler from './WordCycler';
 
 const STATS = [
   {
-    value: 50000,
-    suffix: '+',
-    label: 'cast_vote operations per second on a single CPU core',
-  },
-  {
     value: 3,
     suffix: '',
     label: 'consensus models: MAJORITY · QUORUM · CONSENT',
   },
   {
-    value: 18,
+    value: 20,
     suffix: '',
-    label: 'MCP tools under a strict JSON-RPC 2.0 contract',
+    label: 'decision lifecycle calls over MCP',
   },
   {
     value: 0,
     suffix: '',
     label: 'external services — state lives in embedded RocksDB',
+  },
+  {
+    value: 1,
+    suffix: '',
+    label: 'static binary — no containers, no cluster needed',
   },
 ];
 
@@ -183,10 +183,10 @@ export default function HeroClient() {
           className="absolute -bottom-6 -left-4 hidden rounded-xl border border-slate-200 bg-white/90 px-3.5 py-2.5 shadow-lg shadow-blue-900/5 backdrop-blur md:block dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-black/30"
         >
           <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
-            SSE · GET /mcp/events
+            SSE · real-time event stream
           </div>
           <div className="mt-1 font-mono text-[11px] font-semibold text-blue-600 dark:text-blue-400">
-            vote_cast → all-orgs subscription
+            new decision → all-orgs subscription
           </div>
         </motion.div>
       </motion.div>
