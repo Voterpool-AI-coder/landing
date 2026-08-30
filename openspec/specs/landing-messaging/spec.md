@@ -31,12 +31,12 @@ The "Problem" section (four problem cards) SHALL frame alternatives as infrastru
 
 ### Requirement: Solution section emphasizes deployment simplicity
 
-The "Solution" section (three-column card) SHALL lead with deployment and integration value. Card 03 ("Zero integration surface") MUST be rewritten to emphasize "one binary, no containers, zero external services" as the headline, not as supporting detail.
+The "Solution" section (three-column card) SHALL lead with deployment and integration value. Card 03 MUST present the single static binary with embedded storage and no external services as deployment simplicity. The claim "no containers" MUST NOT be used: containers remain a valid deployment option (owner decision in PR review); the single binary is one deployment variant, not the absence of containers.
 
 #### Scenario: Solution card 03 leads with deployment
 
 - **WHEN** a visitor reads the three solution cards
-- **THEN** card 02 reads "Policy, not hierarchy" with an explanation of configurable governance rules, card 03 reads about verifiable outcomes with a focus on auditability and reproducibility, and card 03 (renumbered) leads with deployment simplicity: single binary, no external dependencies, MCP-compatible
+- **THEN** card 03 leads with deployment simplicity: one statically linked binary, embedded storage, no external services, MCP-compatible, without claiming containers are absent
 
 ### Requirement: Feature cards use value labels instead of protocol chips
 
@@ -49,12 +49,14 @@ Each of the six feature cards in the "Features" section SHALL display a value-or
 
 ### Requirement: Consensus Math section uses plain English with one technical anchor
 
-The "Math" section SHALL present each consensus model with a plain-English description of what the model means for decision-makers. Full formulas (`Y > T / 2`, `V >= Qreq ^ Y > N`, `N = 0 ^ Y > 0 ^ C >= H`) MUST be replaced with readable statements. A link to the full spec (openspec) MAY be provided for readers who need exact formulas. The variable legend MUST be retained or simplified with a link to specs.
+The "Math" section SHALL present each consensus model with a plain-English description of what the model means for decision-makers. Full formulas (`Y > T / 2`, `V >= Qreq ^ Y > N`, `N = 0 ^ Y > 0 ^ C >= H`) MUST be replaced by readable statements. Exactly ONE technical anchor formula per model MAY be retained as a precise reference, alongside the plain-English statement. A link to the full spec (openspec) MUST be provided for readers who need exact formulas. The variable legend MUST be retained or simplified with a link to specs.
+
+This requirement is reconciled with `landing-copy`: that spec mandates the exact formula as a reproducible anchor; this spec mandates accessibility. The agreed compromise is both — anchor formula + plain-English + spec link — on the same card.
 
 #### Scenario: Visitor reads MAJORITY model description
 
 - **WHEN** a visitor opens the Consensus Math section
-- **THEN** MAJORITY is described as "simple majority — more YES than NO wins," not as "Y > T/2," and a link to the formal spec is available
+- **THEN** MAJORITY is described as "simple majority — more YES than NO wins," and the technical anchor `Y > T/2` is shown next to it with a link to the formal spec
 
 #### Scenario: Variable legend is preserved or linked
 
