@@ -1,7 +1,7 @@
 ## 1. Hero & Tool Counter
 
-- [x] 1.1 In `components/HeroClient.tsx:18`, change the decision-lifecycle stat value from `20` to `18` and verify the rendered hero metric reads `18`.
-- [x] 1.2 Confirm the `18` matches the canonical tool list (register_agent, whoami, update_agent, get_agent, create/join/leave/transfer/dissolve/list_pending, create_proposal, cast_vote, server/discover, tools/list, get_playbook, get_proposal, get_proposals, wait_proposal_close) — exactly 18 entries.
+- [x] 1.1 ~~20→18~~ REVERTED per PR review: value stays `20` (owner confirmed).
+- [x] 1.2 Superseded by 1.1: canonical decision-lifecycle count is `20` per owner (the 18-tool list excludes some lifecycle calls). (register_agent, whoami, update_agent, get_agent, create/join/leave/transfer/dissolve/list_pending, create_proposal, cast_vote, server/discover, tools/list, get_playbook, get_proposal, get_proposals, wait_proposal_close) — exactly 18 entries.
 
 ## 2. Technology Cloud (≤5 tags, no libraries)
 
@@ -15,12 +15,12 @@
 
 ## 4. Sharding Rephrase
 
-- [x] 4.1 In `app/page.tsx:773`, replace the "sharding happens behind a round-robin balancer" claim with a statement that the stateless core is designed for future horizontal scaling via shard-seams (Stage 1 `standalone`); verify no claim that clustering happens now.
+- [x] 4.1 In `app/page.tsx:773`, replace the "sharding happens behind a round-robin balancer" claim with a statement that the stateless core is designed for future horizontal scaling via shard-seams only, without stage-config details (PR review); no claim that clustering happens now.
 
 ## 5. Storage & Solution Copy
 
 - [x] 5.1 In `app/page.tsx:169`, change "WriteBatch transactions" to "atomic batch writes" (or "transactional batch writes") and verify no DB-level term remains in visible text.
-- [x] 5.2 In `app/page.tsx:429-431`, add "no containers" to the Solution 03 header/text so it reads "one binary, no containers, zero external services" and verify the headline emphasizes it.
+- [x] 5.2 ~~add "no containers"~~ REVERTED per PR review: headline stays "One binary, zero dependencies".
 
 ## 6. Verification
 

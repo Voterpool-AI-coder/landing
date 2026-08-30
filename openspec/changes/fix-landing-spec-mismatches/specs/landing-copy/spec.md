@@ -34,18 +34,18 @@
 
 ## ADDED Requirements
 
-### Requirement: Hero-статистика показывает ровно 18 инструментов протокола
+### Requirement: Hero-статистика показывает 20 decision lifecycle calls
 
-Hero-статистика `components/HeroClient.tsx` (метрика «decision lifecycle calls over MCP») ДОЛЖНА отображать значение `18`, соответствующее каноническому подсчёту инструментов протокола (register_agent, whoami, update_agent, get_agent, create/join/leave/transfer/dissolve/list_pending, create_proposal, cast_vote, server/discover, tools/list, get_playbook, get_proposal, get_proposals, wait_proposal_close). Значение `20` или любое иное ДОЛЖНО быть заменено на `18`.
+Hero-статистика `components/HeroClient.tsx` (метрика «decision lifecycle calls over MCP») ДОЛЖНА отображать значение `20` — владелец проекта подтвердил этот подсчёт на ревью PR (счёт отражает вызовы жизненного цикла решений, включая служебные, а не только перечень 18 именованных инструментов).
 
 #### Scenario: Посетитель видит hero-статистику инструментов
 
 - **WHEN** посетитель загружает лендинг и читает hero-статистику
-- **THEN** метрика «decision lifecycle calls over MCP» показывает число `18`, а не `20`
+- **THEN** метрика «decision lifecycle calls over MCP» показывает число `20`
 
-### Requirement: Текст о шардировании отражает Stage 1 standalone и будущие shard-seams
+### Requirement: Текст о шардировании описывает только будущие shard-seams
 
-Любой видимый текст лендинга, упоминающий шардирование или горизонтальное масштабирование, ДОЛЖЕН соответствовать `canonical-specs/shard-seams`: на Этапе 1 допустимо только `cluster.mode: standalone` (любое иное значение — fail-fast; отсутствие секции эквивалентно standalone). Шардирование ДОЛЖНО описываться как будущий интерфейсный «шов» (порты IDirectory/IIdentity/IEventBus), а не как текущее runtime-поведение. Запрещено утверждать, что шардирование «происходит» прямо сейчас за round-robin балансировщиком.
+Любой видимый текст лендинга, упоминающий шардирование или горизонтальное масштабирование, ДОЛЖЕН описывать их исключительно как будущие интерфейсные «шов»-ы (порты IDirectory/IIdentity/IEventBus) согласно `canonical-specs/shard-seams`. Запрещено утверждать, что шардирование «происходит» прямо сейчас (в том числе за round-robin балансировщиком). Детали текущих ограничений конфигурации стадий (cluster.mode/standalone) в лендинге НЕ ДОЛЖНЫ упоминаться — лендинг не позиционирует отсутствие возможностей.
 
 #### Scenario: Посетитель читает текст о шардировании
 

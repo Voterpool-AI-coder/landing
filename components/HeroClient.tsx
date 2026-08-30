@@ -13,7 +13,7 @@ const STATS = [
     label: 'consensus models: MAJORITY · QUORUM · CONSENT',
   },
   {
-    value: 18,
+    value: 20,
     suffix: '',
     label: 'decision lifecycle calls over MCP',
   },

@@ -428,8 +428,8 @@ export default function Home(): JSX.Element {
                   },
                   {
                     n: '03',
-                    title: 'One binary, no containers',
-                    text: 'One statically linked binary, embedded storage, no containers, zero external services. If your agent speaks MCP, it already speaks Voterpool.',
+                    title: 'One binary, zero dependencies',
+                    text: 'One statically linked binary, embedded storage, no external services. If your agent speaks MCP, it already speaks Voterpool.',
                     icon: (
                       <svg
                         width="19"
@@ -799,7 +799,7 @@ export default function Home(): JSX.Element {
                 {[
                   {
                     title: 'Scaling',
-                    text: 'Shared-nothing: the core holds no global in-process state. The stateless core is designed for future horizontal scaling via shard-seams (Stage 1 standalone) — today a single instance serves every request; clustering is a future interface seam (IDirectory / IIdentity / IEventBus), not a current runtime behavior.',
+                    text: 'Shared-nothing: the core holds no global in-process state. The stateless core is designed for future horizontal scaling via shard-seams (IDirectory / IIdentity / IEventBus).',
                   },
                   {
                     title: 'Operations',

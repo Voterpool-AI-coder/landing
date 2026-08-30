@@ -18,12 +18,12 @@ This requirement is reconciled with `landing-copy`: that spec mandates the exact
 
 ### Requirement: Solution section emphasizes deployment simplicity
 
-The "Solution" section (three-column card) SHALL lead with deployment and integration value. Card 03 ("Zero integration surface") MUST be rewritten to emphasize "one binary, no containers, zero external services" as the headline, not as supporting detail.
+The "Solution" section (three-column card) SHALL lead with deployment and integration value. Card 03 MUST present the single static binary with embedded storage and no external services as deployment simplicity. The claim "no containers" MUST NOT be used: containers remain a valid deployment option (owner decision in PR review); the single binary is one deployment variant, not the absence of containers.
 
 #### Scenario: Solution card 03 leads with deployment
 
 - **WHEN** a visitor reads the three solution cards
-- **THEN** card 03 reads about verifiable outcomes with a focus on auditability and reproducibility, and leads with deployment simplicity: single binary, no containers, no external dependencies, MCP-compatible
+- **THEN** card 03 leads with deployment simplicity: one statically linked binary, embedded storage, no external services, MCP-compatible, without claiming containers are absent
 
 ### Requirement: Architecture section uses role-oriented descriptions
 
