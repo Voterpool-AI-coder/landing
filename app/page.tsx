@@ -127,9 +127,9 @@ const CONSENSUS_MODELS = [
     name: 'MAJORITY',
     tagline: 'Simple majority',
     rows: [
-      { status: 'PASSED', formula: 'Y > T / 2' },
-      { status: 'REJECTED', formula: 'N ≥ T / 2 ∨ timeout' },
-      { status: 'EXPIRED', formula: 'impossible by construction' },
+      { status: 'PASSED', plain: 'simple majority — more YES than NO wins', formula: 'Y > T / 2' },
+      { status: 'REJECTED', plain: 'NO reaches half the power, or the timer expires', formula: 'N ≥ T / 2 ∨ timeout' },
+      { status: 'EXPIRED', plain: 'cannot expire by construction', formula: 'impossible by construction' },
     ],
     note: 'Only YES and NO are allowed here — an agent that never votes is effectively against. The threshold is measured against the organization’s full power T.',
   },
@@ -137,9 +137,9 @@ const CONSENSUS_MODELS = [
     name: 'QUORUM_PERCENTAGE',
     tagline: 'Qualified majority',
     rows: [
-      { status: 'PASSED', formula: 'V ≥ Qreq ∧ Y > N' },
-      { status: 'REJECTED', formula: 'V ≥ Qreq ∧ N ≥ Y' },
-      { status: 'EXPIRED', formula: 'timeout ∧ V < Qreq' },
+      { status: 'PASSED', plain: 'enough voted AND more YES than NO', formula: 'V ≥ Qreq ∧ Y > N' },
+      { status: 'REJECTED', plain: 'enough voted AND NO ties or beats YES', formula: 'V ≥ Qreq ∧ N ≥ Y' },
+      { status: 'EXPIRED', plain: 'quorum not met by the deadline', formula: 'timeout ∧ V < Qreq' },
     ],
     note: 'Turnout first, then the ratio. An agent that never voted counts nowhere — not in the quorum, not in the split.',
   },
@@ -147,12 +147,22 @@ const CONSENSUS_MODELS = [
     name: 'CONSENT',
     tagline: 'Full circle of consent',
     rows: [
-      { status: 'PASSED', formula: 'N = 0 ∧ Y > 0 ∧ C ≥ H' },
-      { status: 'REJECTED', formula: 'N > 0' },
-      { status: 'EXPIRED', formula: 'timeout ∧ C < H' },
+      { status: 'PASSED', plain: 'no NO, at least one YES, quorum present', formula: 'N = 0 ∧ Y > 0 ∧ C ≥ H' },
+      { status: 'REJECTED', plain: 'any single NO blocks the circle', formula: 'N > 0' },
+      { status: 'EXPIRED', plain: 'circle unclosed at deadline — too few voters, or all abstained', formula: 'timeout ∧ (C < H ∨ Y = 0)' },
     ],
     note: 'Silence never equals consent: the circle closes only when every eligible voter has spoken — no objections, at least one explicit YES. ABSTAIN fills the headcount C yet adds nothing to N. EQUAL distribution only.',
   },
+];
+
+const CONSENSUS_LEGEND: [string, string][] = [
+  ['Y', 'YES power — total voting power cast in favor'],
+  ['N', 'NO power — total voting power cast against'],
+  ['V', 'turnout — Y + N (power that actually voted)'],
+  ['Qreq', 'required quorum — minimum turnout needed to decide'],
+  ['T', 'frozen total power — org power at proposal creation'],
+  ['C', 'voters who cast a ballot (headcount, includes ABSTAIN)'],
+  ['H', 'frozen ACTIVE participant count at proposal creation'],
 ];
 
 const STACK_LAYERS = [
@@ -166,7 +176,7 @@ const STACK_LAYERS = [
   },
   {
     name: 'storage',
-    desc: 'Embedded RocksDB, secondary indexes, WriteBatch transactions, and an append-only audit log.',
+    desc: 'Embedded RocksDB, secondary indexes, atomic batch writes, and an append-only audit log.',
   },
   {
     name: 'configuration',
@@ -174,16 +184,7 @@ const STACK_LAYERS = [
   },
 ];
 
-const TECH = [
-  'C++20 coroutines',
-  'Drogon HTTP/2 + SSE',
-  'simdjson On-Demand',
-  'RocksDB WAL',
-  'jemalloc',
-  'spdlog + fmt',
-  'yaml-cpp',
-  'concurrentqueue',
-];
+const TECH = ['HTTP/2', 'RocksDB', 'JSON-RPC 2.0', 'MCP', 'C++20'];
 
 type Guarantee = { title: string; text: string; icon: ReactNode };
 
@@ -427,8 +428,8 @@ export default function Home(): JSX.Element {
                   },
                   {
                     n: '03',
-                    title: 'One binary, zero dependencies',
-                    text: 'One statically linked binary, embedded storage, no external services. If your agent speaks MCP, it already speaks Voterpool.',
+                    title: 'One binary, no containers',
+                    text: 'One statically linked binary, embedded storage, no containers, zero external services. If your agent speaks MCP, it already speaks Voterpool.',
                     icon: (
                       <svg
                         width="19"
@@ -587,6 +588,28 @@ export default function Home(): JSX.Element {
             </Reveal>
           </div>
 
+          <div className="mb-6">
+            <Reveal>
+              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/85 px-5 py-4 text-sm backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/70">
+                <span className="font-semibold text-slate-700 dark:text-slate-200">
+                  Variables:{' '}
+                </span>
+                {CONSENSUS_LEGEND.map(([sym, desc], i) => (
+                  <span
+                    key={sym}
+                    className="text-slate-500 dark:text-slate-400"
+                  >
+                    {i > 0 && ' · '}
+                    <code className="font-mono font-bold text-slate-700 dark:text-slate-200">
+                      {sym}
+                    </code>{' '}
+                    {desc}
+                  </span>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {CONSENSUS_MODELS.map((model, i) => (
               <Reveal key={model.name} delay={i * 0.09}>
@@ -603,7 +626,7 @@ export default function Home(): JSX.Element {
                   </div>
                   <div className="flex-1 space-y-2.5 px-6 py-5 font-mono text-[12.5px]">
                     {model.rows.map((row) => (
-                      <div key={row.status} className="flex items-center gap-3">
+                      <div key={row.status} className="flex items-baseline gap-3">
                         <span
                           className={`w-[74px] shrink-0 text-right text-[11px] font-bold ${
                             row.status === 'PASSED'
@@ -616,7 +639,13 @@ export default function Home(): JSX.Element {
                           {row.status}
                         </span>
                         <span className="text-slate-600 dark:text-slate-300">
-                          {row.formula}
+                          <span className="font-sans text-[12px]">
+                            {row.plain}
+                          </span>
+                          {': '}
+                          <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11.5px] dark:bg-slate-800">
+                            {row.formula}
+                          </code>
                         </span>
                       </div>
                     ))}
@@ -770,7 +799,7 @@ export default function Home(): JSX.Element {
                 {[
                   {
                     title: 'Scaling',
-                    text: 'Shared-nothing: the core holds no global in-process state. Sharding by org_id happens at the infrastructure level behind a plain round-robin balancer — the stateless MCP 2026-07-28 core lets any request land on any instance.',
+                    text: 'Shared-nothing: the core holds no global in-process state. The stateless core is designed for future horizontal scaling via shard-seams (Stage 1 standalone) — today a single instance serves every request; clustering is a future interface seam (IDirectory / IIdentity / IEventBus), not a current runtime behavior.',
                   },
                   {
                     title: 'Operations',
